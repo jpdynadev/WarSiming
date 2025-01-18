@@ -271,7 +271,7 @@
   
   .attack-button:hover {
     background-color: #e63a3a;
-    transform: scale(1.1);
+    transform: scale(1.2);
   }
   
   .attack-button:disabled {
