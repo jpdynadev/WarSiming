@@ -1,0 +1,85 @@
+/* General Layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.armies {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  margin: 20px 0;
+}
+
+.army-list {
+  flex: 1;
+  margin: 0 10px;
+  padding: 10px;
+  background-color: #2c2c2c;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.army-list h2 {
+  color: #f0e68c;
+}
+
+/* Buttons */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #8b0000;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+button:hover {
+  background-color: #b22222;
+  transform: scale(1.1);
+}
+
+button:active {
+  transform: scale(1);
+}
+
+/* Dice Roller */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #2c2c2c;
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal h3 {
+  color: #f0e68c;
+}
+
+/* Dice Animation */
+.dice-roll {
+  display: inline-block;
+  font-size: 20px;
+  color: #f0e68c;
+  animation: roll-dice 0.5s ease-in-out;
+}
+
+@keyframes roll-dice {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

@@ -1,0 +1,233 @@
+.army-container {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .army-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.9);
+  }
+  
+  .army-header {
+    font-family: "Cinzel", serif;
+    font-size: 24px;
+    color: #d43f3f;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+  }
+  
+  .select-wrapper {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .select-label {
+    font-size: 14px;
+    color: #c0c0c0;
+  }
+  
+  .select-dropdown {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    transition: border-color 0.3s;
+  }
+  
+  .select-dropdown:hover {
+    border-color: #d43f3f;
+  }
+  
+  .select-dropdown:focus {
+    border-color: #f0e68c;
+  }
+  
+  .units-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+  
+  .unit-card {
+    background-color: #2a2a2a;
+    border: 2px solid #444;
+    border-radius: 4px;
+    color: #e0e0e0;
+    padding: 10px;
+    width: 120px;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .unit-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
+    border-color: #d43f3f;
+  }
+  
+  .add-unit-section {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #222;
+    border: 2px solid #444;
+    border-radius: 4px;
+  }
+  
+  .add-unit-label {
+    display: block;
+    font-size: 14px;
+    margin-top: 10px;
+    color: #c0c0c0;
+  }
+  
+  .add-unit-input,
+  .add-unit-dropdown {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    margin-top: 5px;
+    transition: border-color 0.3s;
+  }
+  
+  .add-unit-input:focus,
+  .add-unit-dropdown:focus {
+    border-color: #d43f3f;
+  }
+  
+  .add-unit-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #444;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .add-unit-button:hover {
+    background-color: #d43f3f;
+    transform: scale(1.05);
+  }
+  
+  .add-unit-button:active {
+    transform: scale(1);
+  }
+  
+  .army-container {
+    border: 2px solid #444;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+  }
+  
+  .army-header {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .select-wrapper {
+    margin-bottom: 15px;
+  }
+  
+  .select-label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .select-dropdown {
+    padding: 5px;
+    border-radius: 5px;
+  }
+  
+  .units-container {
+    margin-top: 15px;
+  }
+  
+  .unit-card {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+  }
+  
+  .unit-card:hover {
+    transform: scale(1.05);
+    background-color: #444;
+  }
+  
+  .current-units {
+    margin-top: 20px;
+  }
+  
+  .unit-wrapper {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #2a2a2a;
+    border-radius: 5px;
+  }
+  
+  .add-model-button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #3a3a3a;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .add-model-button:hover {
+    background-color: #5a5a5a;
+  }
+  
+  .model-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+  }
+  
+  .remove-model-button {
+    margin-left: 10px;
+    padding: 3px 5px;
+    background-color: #d43f3f;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .remove-model-button:hover {
+    background-color: #e63a3a;
+  }
+  

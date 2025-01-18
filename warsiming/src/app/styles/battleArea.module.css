@@ -1,0 +1,296 @@
+/* General Styles for Battle Area */
+.battle-area {
+    background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+    color: #e0e0e0;
+    border: 3px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .battle-header {
+    font-family: "Cinzel", serif;
+    font-size: 28px;
+    color: #d43f3f;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 6px #000;
+    text-transform: uppercase;
+  }
+  
+  /* Unit Section */
+  .unit-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .unit-card {
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
+    border: 2px solid #444;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    color: #e0e0e0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.7);
+    cursor: pointer;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .unit-card:hover {
+    transform: scale(1.1);
+    border-color: #d43f3f;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.9);
+  }
+  
+  .unit-card.selected {
+    border-color: gold;
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.8);
+  }
+  
+  /* Attack Button */
+  .attack-button {
+    display: block;
+    margin: 20px auto;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #e0e0e0;
+    background-color: #444;
+    border: 2px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .attack-button:hover {
+    background-color: #d43f3f;
+    box-shadow: 0 8px 20px rgba(255, 69, 69, 0.9);
+    transform: scale(1.1);
+  }
+  
+  .attack-button:active {
+    transform: scale(0.95);
+  }
+  
+  /* Result Display */
+  .result-display {
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
+    border: 2px solid #444;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 20px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    color: #d3d3d3;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+  }
+  
+  /* Animations */
+  @keyframes grimPulse {
+    0% {
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+    }
+    100% {
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+  }
+  
+  @keyframes battleGlow {
+    0% {
+      text-shadow: 0 0 5px rgba(255, 69, 69, 0.5), 0 0 10px rgba(255, 69, 69, 0.3);
+    }
+    50% {
+      text-shadow: 0 0 15px rgba(255, 69, 69, 0.7), 0 0 30px rgba(255, 69, 69, 0.5);
+    }
+    100% {
+      text-shadow: 0 0 5px rgba(255, 69, 69, 0.5), 0 0 10px rgba(255, 69, 69, 0.3);
+    }
+  }
+  
+  /* Apply Animations */
+  .battle-header {
+    animation: battleGlow 2s infinite;
+  }
+  
+  .attack-button:hover {
+    animation: grimPulse 1.5s infinite;
+  }
+  
+  .battle-area {
+    padding: 20px;
+    border: 2px solid #444;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+  }
+  
+  .battle-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .unit-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .attacker-section, .defender-section {
+    flex: 1;
+  }
+  
+  .unit-card {
+    display: block;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.3s;
+  }
+  
+  .unit-card:hover {
+    transform: scale(1.05);
+    border-color: #d43f3f;
+  }
+  
+  .unit-card.selected {
+    border-color: gold;
+    background-color: #333;
+    box-shadow: 0 0 15px gold;
+  }
+  
+  .attack-button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #d43f3f;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .attack-button:hover {
+    background-color: #e63a3a;
+    transform: scale(1.1);
+  }
+  
+  .result-display {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    font-family: monospace;
+  }
+  .battle-area {
+    padding: 20px;
+    border: 2px solid #444;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+  }
+  
+  .battle-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .unit-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .attacker-section, .defender-section {
+    flex: 1;
+  }
+  
+  .unit-card {
+    display: block;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.3s;
+  }
+  
+  .unit-card:hover {
+    transform: scale(1.05);
+    border-color: #d43f3f;
+  }
+  
+  .unit-card.selected {
+    border-color: gold;
+    background-color: #333;
+    box-shadow: 0 0 15px gold;
+  }
+  
+  .unit-card:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  .attack-button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #d43f3f;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .attack-button:hover {
+    background-color: #e63a3a;
+    transform: scale(1.1);
+  }
+  
+  .attack-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+  }
+  
+  .selected-info {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .attack-log {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #e0e0e0;
+    white-space: pre-wrap;
+  }
+  
