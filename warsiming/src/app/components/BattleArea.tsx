@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Unit } from "../shared";
+import { Unit, Model } from "../shared";
 import styles from "../styles/battleArea.module.css";
 
 type BattleAreaProps = {
@@ -12,106 +12,273 @@ type BattleAreaProps = {
 const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits }) => {
   const [updatedAttackerUnits, setUpdatedAttackerUnits] = useState<Unit[]>([]);
   const [updatedDefenderUnits, setUpdatedDefenderUnits] = useState<Unit[]>([]);
+
   const [selectedAttacker, setSelectedAttacker] = useState<Unit | null>(null);
   const [selectedDefender, setSelectedDefender] = useState<Unit | null>(null);
+
+  // Arrays for raw dice rolls (for dice animation display)
+  const [hitDice, setHitDice] = useState<number[]>([]);
+  const [woundDice, setWoundDice] = useState<number[]>([]);
+  const [saveDice, setSaveDice] = useState<number[]>([]);
+
+  // Text log of final breakdown
   const [attackLog, setAttackLog] = useState<string>("");
 
-  // Sync local state with props when they change
+  /**
+   * On first render or whenever attackerUnits/defenderUnits update,
+   * set local state. Also, ensure each model has a readable "Model #x" name
+   * instead of a UUID or empty string.
+   */
   useEffect(() => {
-    setUpdatedAttackerUnits(attackerUnits);
-    setUpdatedDefenderUnits(defenderUnits);
+    const renameModels = (units: Unit[]) => {
+      return units.map((unit) => {
+        const newModels = unit.models.map((m, i) => {
+          // If no explicit name, use "Model #1," "Model #2," etc.
+          // or any custom naming you prefer (Marine #1, Terminator #1, etc.).
+          const modelName = m.name || `Model #${i + 1}`;
+          return { ...m, name: modelName };
+        });
+        return { ...unit, models: newModels };
+      });
+    };
+
+    setUpdatedAttackerUnits(renameModels(attackerUnits));
+    setUpdatedDefenderUnits(renameModels(defenderUnits));
   }, [attackerUnits, defenderUnits]);
 
+  // -----------------------------
+  // Toggles for selecting units
+  // -----------------------------
+  const toggleAttackerSelection = (unit: Unit) => {
+    if (selectedAttacker?.name === unit.name) {
+      setSelectedAttacker(null);
+    } else {
+      setSelectedAttacker(unit);
+    }
+  };
+
+  const toggleDefenderSelection = (unit: Unit) => {
+    if (selectedDefender?.name === unit.name) {
+      setSelectedDefender(null);
+    } else {
+      setSelectedDefender(unit);
+    }
+  };
+
+  // -----------------------------
+  // Swap Attackers / Defenders
+  // -----------------------------
+  const handleToggleSides = () => {
+    const oldAttackers = [...updatedAttackerUnits];
+    const oldDefenders = [...updatedDefenderUnits];
+    setUpdatedAttackerUnits(oldDefenders);
+    setUpdatedDefenderUnits(oldAttackers);
+
+    // Swap the selected units as well
+    const oldSelAtt = selectedAttacker;
+    const oldSelDef = selectedDefender;
+    setSelectedAttacker(oldSelDef);
+    setSelectedDefender(oldSelAtt);
+
+    // Clear dice/log
+    setHitDice([]);
+    setWoundDice([]);
+    setSaveDice([]);
+    setAttackLog("");
+  };
+
+  // -----------------------------
+  // Attack Logic
+  // -----------------------------
   const handleAttack = () => {
     if (!selectedAttacker || !selectedDefender) return;
 
-    let damageRemaining = selectedAttacker.attacks;
-    let hitRolls = [];
-    let woundRolls = [];
-    let saveRolls = [];
-    let damageDealt = 0;
+    // Clear previous dice
+    setHitDice([]);
+    setWoundDice([]);
+    setSaveDice([]);
+    setAttackLog("");
 
-    // Step 1: Hit Rolls
-    hitRolls = Array.from({ length: selectedAttacker.attacks }, () =>
+    // 1) Total # of attacks = Attacker's A * # of models
+    const attackerModelsCount = selectedAttacker.models.length;
+    const totalAttacks = selectedAttacker.attacks * attackerModelsCount;
+
+    // 2) Roll to Hit
+    const rawHitRolls = Array.from({ length: totalAttacks }, () =>
       Math.floor(Math.random() * 6) + 1
-    ).filter((roll) => roll >= selectedAttacker.ballisticSkill);
+    );
+    setHitDice(rawHitRolls);
 
-    // Step 2: Wound Rolls
-    woundRolls = hitRolls.map(() => {
-      const roll = Math.floor(Math.random() * 6) + 1;
-      if (selectedAttacker.strength >= 2 * selectedDefender.toughness) return roll >= 2;
-      if (selectedAttacker.strength > selectedDefender.toughness) return roll >= 3;
-      if (selectedAttacker.strength === selectedDefender.toughness) return roll >= 4;
-      if (selectedAttacker.strength < selectedDefender.toughness / 2) return roll >= 6;
-      return roll >= 5;
+    // Basic logic: 1 = auto-fail, 6 = auto-success, else compare to ballisticSkill
+    // (If it's melee, you'd compare to weaponSkill, but we'll assume BS for now.)
+    const hits = rawHitRolls.filter((roll) => {
+      if (roll === 1) return false;
+      if (roll === 6) return true;
+      return roll >= selectedAttacker.ballisticSkill;
     });
 
-    const wounds = woundRolls.filter((wound) => wound).length;
+    // 3) Wound Roll
+    // Determine needed to wound
+    let neededToWound: number;
+    if (selectedAttacker.strength >= 2 * selectedDefender.toughness) neededToWound = 2;
+    else if (selectedAttacker.strength > selectedDefender.toughness) neededToWound = 3;
+    else if (selectedAttacker.strength === selectedDefender.toughness) neededToWound = 4;
+    else if (selectedAttacker.strength <= selectedDefender.toughness / 2) neededToWound = 6;
+    else neededToWound = 5;
 
-    // Step 3: Saving Throws
-    saveRolls = Array.from({ length: wounds }, () =>
+    const rawWoundRolls = Array.from({ length: hits.length }, () =>
       Math.floor(Math.random() * 6) + 1
-    ).filter((roll) => roll >= (selectedDefender.invulnerableSave ?? selectedDefender.save));
+    );
+    setWoundDice(rawWoundRolls);
 
-    const failedSaves = wounds - saveRolls.length;
-    damageDealt = failedSaves;
+    const woundArray = rawWoundRolls.map((roll) => {
+      if (roll === 1) return false; // auto-fail
+      if (roll === 6) return true;  // auto-success
+      return roll >= neededToWound;
+    });
+    const wounds = woundArray.filter(Boolean).length;
 
-    // Step 4: Apply Damage
-    const newDefenderUnits = updatedDefenderUnits.map((unit) => {
-      if (unit.name === selectedDefender.name) {
-        const updatedModels = unit.models.map((model) => {
-          if (damageRemaining > 0) {
-            const damage = Math.min(damageRemaining, model.health);
-            damageRemaining -= damage;
-            return { ...model, health: model.health - damage };
-          }
-          return model;
-        }).filter((model) => model.health > 0); // Remove dead models
+    // 4) Saving Throws
+    const baseSave = selectedDefender.save;
+    const invuln = selectedDefender.invulnerableSave ?? 99; // If no invuln, treat as 99
+    const attackerAP = selectedAttacker.ap ?? 0;
+    const normalSaveNeeded = baseSave + attackerAP;
+    const finalSaveNeeded = Math.min(normalSaveNeeded, invuln);
 
-        return { ...unit, models: updatedModels };
+    const rawSaveRolls = Array.from({ length: wounds }, () =>
+      Math.floor(Math.random() * 6) + 1
+    );
+    setSaveDice(rawSaveRolls);
+
+    // 1 always fails, 6 is not auto-save (in standard 40k),
+    // so we just check if roll >= finalSaveNeeded
+    const saveArray = rawSaveRolls.map((roll) => {
+      if (roll === 1) return false;
+      return roll >= finalSaveNeeded;
+    });
+    const successfulSaves = saveArray.filter(Boolean).length;
+    const failedSaves = wounds - successfulSaves;
+
+    // 5) Apply Damage
+    // Each "failed save" => (attackerDamage) damage to a single model in the defender
+    // We track the "lastDamagedIndex" on the defending unit, so that future attacks
+    // start damaging the same model if it's still alive.
+    let newDefenderUnits = structuredClone(updatedDefenderUnits);
+    const attackerDamage = selectedAttacker.damage ?? 1;
+    let totalFailed = failedSaves;
+
+    newDefenderUnits = newDefenderUnits.map((unit) => {
+      if (unit.name !== selectedDefender.name) {
+        return unit; // unaffected
       }
-      return unit;
-    }).filter((unit) => unit.models.length > 0); // Remove empty units
+
+      // In 10th Edition, the defender chooses which model to allocate. 
+      // We'll do a "lastDamagedIndex" approach for simplicity.
+      const updatedModels: Model[] = [...unit.models];
+      let idx = unit.lastDamagedIndex ?? 0; // start from last wounded or 0
+
+      // Apply each chunk of damage (one chunk per "failed save")
+      while (totalFailed > 0 && idx < updatedModels.length) {
+        const model = updatedModels[idx];
+        const newHealth = model.health - attackerDamage;
+
+        if (newHealth <= 0) {
+          // Model dies
+          updatedModels.splice(idx, 1);
+          // Do NOT increment idx, because the next model will shift into this index
+        } else {
+          // Model survives
+          updatedModels[idx] = { ...model, health: newHealth };
+          // Keep damaging this same model until the next chunk 
+          // So we do not increment idx if it’s still alive
+          idx = idx; // effectively unchanged
+        }
+
+        totalFailed--;
+      }
+
+      // If we've run out of models, the rest of the damage is lost
+      // or if totalFailed is 0, we've applied all damage.
+
+      // Update the lastDamagedIndex
+      // If idx >= updatedModels.length, that means all models died, so reset to 0
+      const newLastIndex = idx >= updatedModels.length ? 0 : idx;
+
+      return {
+        ...unit,
+        models: updatedModels,
+        lastDamagedIndex: newLastIndex,
+      };
+    });
+
+    // Remove any units that have 0 models left
+    newDefenderUnits = newDefenderUnits.filter((u) => u.models.length > 0);
 
     setUpdatedDefenderUnits(newDefenderUnits);
 
-    // Deselect the defender if it’s destroyed
-    if (!newDefenderUnits.find((unit) => unit.name === selectedDefender.name)) {
+    // If the defender unit was entirely destroyed, unselect it
+    const stillAlive = newDefenderUnits.find((u) => u.name === selectedDefender.name);
+    if (!stillAlive) {
       setSelectedDefender(null);
     }
 
-    // Log the breakdown of the attack
-    setAttackLog(`
-      Attacker: ${selectedAttacker.name}
-      Defender: ${selectedDefender.name}
+    // Build the Attack Log
+    const finalLog = `
+    Attacker: ${selectedAttacker.name}
+    Defender: ${selectedDefender.name}
 
-      Hit Rolls: ${hitRolls.join(", ")} (${hitRolls.length}/${selectedAttacker.attacks})
-      Wound Rolls: ${woundRolls.map((w) => (w ? "Success" : "Fail")).join(", ")} (${wounds}/${hitRolls.length})
-      Saves: ${saveRolls.join(", ")} (${saveRolls.length}/${wounds})
-      Damage Dealt: ${damageDealt}
-    `);
+    Hits: ${hits.length} of ${totalAttacks} attacks
+      (dice rolls: ${rawHitRolls.join(", ")})
+    Wounds: ${wounds} of ${hits.length} hits
+      (dice rolls: ${rawWoundRolls.join(", ")}; needed ${neededToWound}+)
+    Successful Saves: ${successfulSaves} of ${wounds}
+      (dice rolls: ${rawSaveRolls.join(", ")}; needed ${finalSaveNeeded}+)
+    Failed Saves: ${failedSaves}, each dealing ${attackerDamage} damage.
+
+    Total Damage Dealt: ${failedSaves * attackerDamage}
+    (Damage continues on the same wounded model until it dies.)
+    `;
+    setAttackLog(finalLog);
   };
 
+  // -----------------------------
+  // Render
+  // -----------------------------
   return (
     <div className={styles["battle-area"]}>
       <h2 className={styles["battle-header"]}>Battle Area</h2>
+
+      <button className={styles.toggleButton} onClick={handleToggleSides}>
+        Swap Attackers / Defenders
+      </button>
 
       <div className={styles["unit-section"]}>
         {/* Attacker Section */}
         <div className={styles["attacker-section"]}>
           <h3>Attacker Army</h3>
           {updatedAttackerUnits.length === 0 && <p>No units in the attacker army</p>}
+
           {updatedAttackerUnits.map((unit) => (
-            <button
-              key={unit.name}
-              onClick={() => setSelectedAttacker(unit)}
-              className={`${styles["unit-card"]} ${
-                selectedAttacker?.name === unit.name ? styles["selected"] : ""
-              }`}
-              disabled={unit.models.length === 0}
-            >
-              {unit.name} (Models: {unit.models.length})
-            </button>
+            <div key={unit.name} className={styles["unit-block"]}>
+              <button
+                onClick={() => toggleAttackerSelection(unit)}
+                className={`${styles["unit-card"]} ${
+                  selectedAttacker?.name === unit.name ? styles["selected"] : ""
+                }`}
+                disabled={unit.models.length === 0}
+              >
+                {unit.name} (Models: {unit.models.length})
+              </button>
+
+              {/* Show each model's name & HP */}
+              <div className={styles["model-stats"]}>
+                {unit.models.map((m) => (
+                  <div key={m.name} className={styles["model-entry"]}>
+                    {m.name}: {m.health} HP
+                  </div>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
@@ -119,21 +286,32 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
         <div className={styles["defender-section"]}>
           <h3>Defender Army</h3>
           {updatedDefenderUnits.length === 0 && <p>No units in the defender army</p>}
+
           {updatedDefenderUnits.map((unit) => (
-            <button
-              key={unit.name}
-              onClick={() => setSelectedDefender(unit)}
-              className={`${styles["unit-card"]} ${
-                selectedDefender?.name === unit.name ? styles["selected"] : ""
-              }`}
-              disabled={unit.models.length === 0}
-            >
-              {unit.name} (Models: {unit.models.length})
-            </button>
+            <div key={unit.name} className={styles["unit-block"]}>
+              <button
+                onClick={() => toggleDefenderSelection(unit)}
+                className={`${styles["unit-card"]} ${
+                  selectedDefender?.name === unit.name ? styles["selected"] : ""
+                }`}
+                disabled={unit.models.length === 0}
+              >
+                {unit.name} (Models: {unit.models.length})
+              </button>
+
+              <div className={styles["model-stats"]}>
+                {unit.models.map((m) => (
+                  <div key={m.name} className={styles["model-entry"]}>
+                    {m.name}: {m.health} HP
+                  </div>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
 
+      {/* Attack Button */}
       <button
         className={styles["attack-button"]}
         onClick={handleAttack}
@@ -142,7 +320,65 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
         Roll Attack
       </button>
 
-      {/* Display Selected Info */}
+      {/* Dice Display (Hits, Wounds, Saves) */}
+      {(hitDice.length > 0 || woundDice.length > 0 || saveDice.length > 0) && (
+        <div className={styles.diceResultsSection}>
+          <h4>Dice Rolls</h4>
+
+          {/* Hits */}
+          {hitDice.length > 0 && (
+            <div className={styles.diceRow}>
+              <strong>Hit Rolls:</strong>
+              {hitDice.map((roll, i) => (
+                <div
+                  key={`hit-${i}`}
+                  className={`${styles.dice} ${styles.rolling} ${
+                    roll === 1 ? styles.autoFail : roll === 6 ? styles.autoSuccess : ""
+                  }`}
+                >
+                  {roll}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Wounds */}
+          {woundDice.length > 0 && (
+            <div className={styles.diceRow}>
+              <strong>Wound Rolls:</strong>
+              {woundDice.map((roll, i) => (
+                <div
+                  key={`wound-${i}`}
+                  className={`${styles.dice} ${styles.rolling} ${
+                    roll === 1 ? styles.autoFail : roll === 6 ? styles.autoSuccess : ""
+                  }`}
+                >
+                  {roll}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Saves */}
+          {saveDice.length > 0 && (
+            <div className={styles.diceRow}>
+              <strong>Save Rolls:</strong>
+              {saveDice.map((roll, i) => (
+                <div
+                  key={`save-${i}`}
+                  className={`${styles.dice} ${styles.rolling} ${
+                    roll === 1 ? styles.autoFail : ""
+                  }`}
+                >
+                  {roll}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Display selected Attacker / Defender */}
       <div className={styles["selected-info"]}>
         {selectedAttacker && (
           <div>
