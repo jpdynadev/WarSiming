@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "../styles/battleArea.module.css";
-import { Unit, Model } from "../shared";
+import { Unit } from "../shared";
 
 type BattleAreaProps = {
   leftSideUnits: Unit[];
