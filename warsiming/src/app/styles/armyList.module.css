@@ -230,4 +230,83 @@
   .remove-model-button:hover {
     background-color: #e63a3a;
   }
+  .army-container {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .army-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.9);
+  }
+  
+  .header {
+    font-size: 24px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #d43f3f;
+  }
+  
+  .select-wrapper {
+    margin-bottom: 20px;
+  }
+  
+  .select-dropdown {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .select-dropdown:hover {
+    border-color: #d43f3f;
+  }
+  
+  .add-button {
+    margin: 5px;
+    padding: 8px 16px;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #e0e0e0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+  }
+  .add-button:hover {
+    background-color: #d43f3f;
+    transform: scale(1.05);
+  }
+  
+  .units-list {
+    margin-top: 20px;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 10px;
+  }
+  
+  .unit-row {
+    margin: 5px 0;
+    padding: 8px;
+    background-color: #1c1c1c;
+    border-radius: 4px;
+    border: 1px solid #444;
+  }
+  
+  .unit-row-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #f0e68c;
+  }
   

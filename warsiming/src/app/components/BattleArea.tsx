@@ -35,7 +35,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
         const newModels = unit.models.map((m, i) => {
           // If no explicit name, use "Model #1," "Model #2," etc.
           // or any custom naming you prefer (Marine #1, Terminator #1, etc.).
-          const modelName = m.name || `Model #${i + 1}`;
+          const modelName = unit.name || `Model #${i + 1}`;
           return { ...m, name: modelName };
         });
         return { ...unit, models: newModels };
@@ -204,6 +204,9 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
       // If idx >= updatedModels.length, that means all models died, so reset to 0
       const newLastIndex = idx >= updatedModels.length ? 0 : idx;
 
+      setSelectedAttacker(null);
+      setSelectedDefender(null);
+
       return {
         ...unit,
         models: updatedModels,
@@ -247,62 +250,60 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
   return (
     <div className={styles["battle-area"]}>
       <h2 className={styles["battle-header"]}>Battle Area</h2>
-
+  
+      {/* Button to swap Attackers/Defenders */}
       <button className={styles.toggleButton} onClick={handleToggleSides}>
         Swap Attackers / Defenders
       </button>
-
+  
+      {/* Two sections: Attacker Army and Defender Army */}
       <div className={styles["unit-section"]}>
-        {/* Attacker Section */}
+  
+        {/* Attacker Army */}
         <div className={styles["attacker-section"]}>
           <h3>Attacker Army</h3>
           {updatedAttackerUnits.length === 0 && <p>No units in the attacker army</p>}
-
           {updatedAttackerUnits.map((unit) => (
-            <div key={unit.name} className={styles["unit-block"]}>
+            <div key={unit.unitId} className={styles["unit-block"]}>
               <button
                 onClick={() => toggleAttackerSelection(unit)}
                 className={`${styles["unit-card"]} ${
-                  selectedAttacker?.name === unit.name ? styles["selected"] : ""
+                  selectedAttacker?.unitId === unit.unitId ? styles["selected"] : ""
                 }`}
                 disabled={unit.models.length === 0}
               >
                 {unit.name} (Models: {unit.models.length})
               </button>
-
-              {/* Show each model's name & HP */}
               <div className={styles["model-stats"]}>
                 {unit.models.map((m) => (
-                  <div key={m.name} className={styles["model-entry"]}>
-                    {m.name}: {m.health} HP
+                  <div key={m.id} className={styles["model-entry"]}>
+                    {m.name || m.id.slice(0, 6)}: {m.health} HP
                   </div>
                 ))}
               </div>
             </div>
           ))}
         </div>
-
-        {/* Defender Section */}
+  
+        {/* Defender Army */}
         <div className={styles["defender-section"]}>
           <h3>Defender Army</h3>
           {updatedDefenderUnits.length === 0 && <p>No units in the defender army</p>}
-
           {updatedDefenderUnits.map((unit) => (
-            <div key={unit.name} className={styles["unit-block"]}>
+            <div key={unit.unitId} className={styles["unit-block"]}>
               <button
                 onClick={() => toggleDefenderSelection(unit)}
                 className={`${styles["unit-card"]} ${
-                  selectedDefender?.name === unit.name ? styles["selected"] : ""
+                  selectedDefender?.unitId === unit.unitId ? styles["selected"] : ""
                 }`}
                 disabled={unit.models.length === 0}
               >
                 {unit.name} (Models: {unit.models.length})
               </button>
-
               <div className={styles["model-stats"]}>
                 {unit.models.map((m) => (
-                  <div key={m.name} className={styles["model-entry"]}>
-                    {m.name}: {m.health} HP
+                  <div key={m.id} className={styles["model-entry"]}>
+                    {m.name || m.id.slice(0, 6)}: {m.health} HP
                   </div>
                 ))}
               </div>
@@ -310,7 +311,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
           ))}
         </div>
       </div>
-
+  
       {/* Attack Button */}
       <button
         className={styles["attack-button"]}
@@ -319,20 +320,19 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
       >
         Roll Attack
       </button>
-
-      {/* Dice Display (Hits, Wounds, Saves) */}
+  
+      {/* Dice Results - displayed only if there are dice to show */}
       {(hitDice.length > 0 || woundDice.length > 0 || saveDice.length > 0) && (
         <div className={styles.diceResultsSection}>
           <h4>Dice Rolls</h4>
-
-          {/* Hits */}
+          {/* Hit Rolls */}
           {hitDice.length > 0 && (
             <div className={styles.diceRow}>
               <strong>Hit Rolls:</strong>
               {hitDice.map((roll, i) => (
                 <div
                   key={`hit-${i}`}
-                  className={`${styles.dice} ${styles.rolling} ${
+                  className={`${styles.dice} ${
                     roll === 1 ? styles.autoFail : roll === 6 ? styles.autoSuccess : ""
                   }`}
                 >
@@ -341,15 +341,14 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
               ))}
             </div>
           )}
-
-          {/* Wounds */}
+          {/* Wound Rolls */}
           {woundDice.length > 0 && (
             <div className={styles.diceRow}>
               <strong>Wound Rolls:</strong>
               {woundDice.map((roll, i) => (
                 <div
                   key={`wound-${i}`}
-                  className={`${styles.dice} ${styles.rolling} ${
+                  className={`${styles.dice} ${
                     roll === 1 ? styles.autoFail : roll === 6 ? styles.autoSuccess : ""
                   }`}
                 >
@@ -358,15 +357,14 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
               ))}
             </div>
           )}
-
-          {/* Saves */}
+          {/* Save Rolls */}
           {saveDice.length > 0 && (
             <div className={styles.diceRow}>
               <strong>Save Rolls:</strong>
               {saveDice.map((roll, i) => (
                 <div
                   key={`save-${i}`}
-                  className={`${styles.dice} ${styles.rolling} ${
+                  className={`${styles.dice} ${
                     roll === 1 ? styles.autoFail : ""
                   }`}
                 >
@@ -377,8 +375,8 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
           )}
         </div>
       )}
-
-      {/* Display selected Attacker / Defender */}
+  
+      {/* Display Selected Info */}
       <div className={styles["selected-info"]}>
         {selectedAttacker && (
           <div>
@@ -393,7 +391,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
           </div>
         )}
       </div>
-
+  
       {/* Attack Log */}
       {attackLog && (
         <div className={styles["attack-log"]}>
@@ -403,6 +401,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({ attackerUnits, defenderUnits })
       )}
     </div>
   );
+  
 };
 
 export default BattleArea;

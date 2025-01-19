@@ -1,123 +1,101 @@
 "use client";
 
 import React, { useState } from "react";
-import { Unit, armyOptions } from "../shared";
 import styles from "../styles/armyList.module.css";
-import { v4 as uuidv4 } from "uuid";
+
+// Types and data
+import { Unit, instantiateUnit } from "../shared";     // or wherever your shared definitions live
+import { armyOptions } from "../armyOptions";          // your templates
 
 type ArmyListProps = {
-  armyName: string;
-  units: Unit[];
-  onArmyUpdate: (units: Unit[]) => void; // Function to update parent state
+  armyName: string;                // e.g. "Attacker Army" or "Defender Army"
+  units: Unit[];                   // The current units in this army
+  onArmyUpdate: (units: Unit[]) => void;  // Callback to update the parent state
 };
 
 const ArmyList: React.FC<ArmyListProps> = ({ armyName, units, onArmyUpdate }) => {
-  const [selectedArmy, setSelectedArmy] = useState<string>("");
+  const [selectedFaction, setSelectedFaction] = useState<string>("");
 
-  // Add a predefined unit to the army
-  const handleAddPredefinedUnit = (unitName: string) => {
-    const unit = armyOptions[selectedArmy]?.find((u) => u.name === unitName);
-    if (unit) {
-      const updatedUnits = [...units, { ...unit }];
-      console.log("Updated Units:", updatedUnits);
+  /** User chooses a template from the selected faction, we instantiate a new unit and add it. */
+  const handleAddUnit = (templateName: string) => {
+    if (!selectedFaction) return;
+    const templates = armyOptions[selectedFaction];
+    if (!templates) return;
 
-      onArmyUpdate(updatedUnits); // Notify parent
-    }
-  };  
+    const template = templates.find((t) => t.name === templateName);
+    if (!template) return;
 
-  // Add a model to a specific unit
-  const handleAddModel = (unitName: string) => {
-    const updatedUnits = units.map((unit) => {
-      if (unit.name === unitName) {
-        const newModel = { id: uuidv4(), health: unit.models[0]?.health || 10 };
-        return { ...unit, models: [...unit.models, newModel] };
-      }
-      return unit;
-    });
-    console.log("Updated Units:", updatedUnits);
+    // Create a real unit with a unique unitId
+    const newUnit = instantiateUnit(template);
 
-    onArmyUpdate(updatedUnits); // Notify parent
+    // Optionally rename model IDs if you want to ensure uniqueness each time
+    // (instantiateUnit might already handle that; do it here if needed)
+    // newUnit.models = newUnit.models.map((m, i) => ({
+    //   ...m,
+    //   id: uuidv4(), 
+    //   name: m.name ?? `Model #${i + 1}`
+    // }));
+
+    onArmyUpdate([...units, newUnit]);
   };
 
-  // Remove a model from a specific unit
-  const handleRemoveModel = (unitName: string, modelId: string) => {
-    const updatedUnits = units.map((unit) => {
-      if (unit.name === unitName) {
-        const updatedModels = unit.models.filter((model) => model.id !== modelId);
-        return { ...unit, models: updatedModels };
-      }
-      return unit;
-    }).filter((unit) => unit.models.length > 0); // Remove empty units
-    console.log("Updated Units:", updatedUnits);
-    onArmyUpdate(updatedUnits); // Notify parent
-  };
+  // We also might show a function to remove or rename units, etc.
+  // For now, we just show "Add" and the "Current" list.
 
   return (
     <div className={styles["army-container"]}>
-      <h2 className={styles["army-header"]}>{armyName}</h2>
+      {/* Army Title */}
+      <h2 className={styles.header}>{armyName}</h2>
 
-      {/* Select Army */}
+      {/* Faction Select */}
       <div className={styles["select-wrapper"]}>
-        <label className={styles["select-label"]} htmlFor="army-select">
-          Select Army:
-        </label>
+        <label htmlFor="factionSelect">Select Faction:</label>
         <select
-          id="army-select"
-          value={selectedArmy}
-          onChange={(e) => setSelectedArmy(e.target.value)}
+          id="factionSelect"
           className={styles["select-dropdown"]}
+          value={selectedFaction}
+          onChange={(e) => setSelectedFaction(e.target.value)}
         >
-          <option value="">-- Select an Army --</option>
-          {Object.keys(armyOptions).map((army) => (
-            <option key={army} value={army}>
-              {army}
+          <option value="">-- Select --</option>
+          {Object.keys(armyOptions).map((factionKey) => (
+            <option key={factionKey} value={factionKey}>
+              {factionKey}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Add Units */}
-      {selectedArmy && (
-        <div className={styles["units-container"]}>
-          <h3>Add Predefined Unit:</h3>
-          {armyOptions[selectedArmy]?.map((unit) => (
+      {/* Add Unit Buttons */}
+      {selectedFaction && armyOptions[selectedFaction] && (
+        <div>
+          <h3>Add Units from {selectedFaction}:</h3>
+          {armyOptions[selectedFaction].map((tmpl) => (
             <button
-              key={unit.name}
-              onClick={() => handleAddPredefinedUnit(unit.name)}
-              className={styles["unit-card"]}
+              key={tmpl.name}
+              className={styles["add-button"]}
+              onClick={() => handleAddUnit(tmpl.name)}
             >
-              {unit.name}
+              + {tmpl.name}
             </button>
           ))}
         </div>
       )}
 
-      {/* Display Units and Models */}
-      <div className={styles["current-units"]}>
-        <h3>Current Units:</h3>
-        {units.length === 0 && <p>No units added to this army</p>}
-        {units.map((unit) => (
-          <div key={unit.name} className={styles["unit-wrapper"]}>
-            <h4>{unit.name}</h4>
-            <button
-              onClick={() => handleAddModel(unit.name)}
-              className={styles["add-model-button"]}
-            >
-              Add Model
-            </button>
-            <ul>
-              {unit.models.map((model) => (
-                <li key={model.id} className={styles["model-item"]}>
-                  Model {model.id.substring(0, 5)}: {model.health} HP
-                  <button
-                    onClick={() => handleRemoveModel(unit.name, model.id)}
-                    className={styles["remove-model-button"]}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
+      {/* Current Units List */}
+      <div className={styles["units-list"]}>
+        <h3>Current {armyName} Units:</h3>
+        {units.length === 0 && <p>No units yet.</p>}
+        {units.map((u) => (
+          <div key={u.unitId} className={styles["unit-row"]}>
+            <div className={styles["unit-row-title"]}>
+              {u.name} (Models: {u.models.length})  
+            </div>
+            {/* If you want to list each model, do so here: */}
+            {u.models.map((m) => (
+              <div key={m.id}>
+                - {m.name || m.id.slice(0, 6)}: {m.health} HP
+              </div>
+            ))}
           </div>
         ))}
       </div>
