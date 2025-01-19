@@ -36,7 +36,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({
    * If attacker is set but no defender => setDefender (only if other side)
    * else do nothing
    */
-  const handleSelectUnit = (unit: Unit, side: "LEFT" | "RIGHT") => {
+  const handleSelectUnit = (unit: Unit) => {
     if (!selectedAttacker && !selectedDefender) {
       setSelectedAttacker(unit);
       return;
@@ -133,7 +133,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({
       for (let i = 0; i < newUnits.length; i++) {
         if (newUnits[i].unitId === defenderId) {
           const updatedModels = [...newUnits[i].models];
-          let idx = newUnits[i].lastDamagedIndex ?? 0;
+          const idx = newUnits[i].lastDamagedIndex ?? 0;
 
           while (fails > 0 && idx < updatedModels.length) {
             const m = updatedModels[idx];
@@ -206,7 +206,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({
         {leftSideUnits.map((unit) => (
           <div key={unit.unitId} className={styles["unit-block"]}>
             <button
-              onClick={() => handleSelectUnit(unit, "LEFT")}
+              onClick={() => handleSelectUnit(unit)}
               className={`${styles["unit-card"]} ${
                 selectedAttacker?.unitId === unit.unitId ||
                 selectedDefender?.unitId === unit.unitId
@@ -236,7 +236,7 @@ const BattleArea: React.FC<BattleAreaProps> = ({
         {rightSideUnits.map((unit) => (
           <div key={unit.unitId} className={styles["unit-block"]}>
             <button
-              onClick={() => handleSelectUnit(unit, "RIGHT")}
+              onClick={() => handleSelectUnit(unit)}
               className={`${styles["unit-card"]} ${
                 selectedAttacker?.unitId === unit.unitId ||
                 selectedDefender?.unitId === unit.unitId
