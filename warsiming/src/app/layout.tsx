@@ -1,9 +1,11 @@
+// app/layout.tsx (Next.js 13+)
 import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "War Gaming App",
-  description: "A simple war gaming application built with Next.js",
+  title: "Warhammer 40k Battle Simulator",
+  // This is critical for responsive scaling on mobile
+  viewport: "width=device-width, initial-scale=1.0",
 };
 
 export default function RootLayout({
@@ -13,9 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <main>{children}</main>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
