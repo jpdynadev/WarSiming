@@ -16,6 +16,13 @@ const ArmyList: React.FC<ArmyListProps> = ({ armyName, units, onArmyUpdate }) =>
   const [selectedFaction, setSelectedFaction] = useState("");
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
 
+  const handleFactionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newFaction = e.target.value;
+    setSelectedFaction(newFaction);
+    // Reset units when the faction changes.
+    onArmyUpdate([]);
+  };
+
   const handleAddUnit = (templateName: string) => {
     if (!selectedFaction) return;
     const templates = armyOptions[selectedFaction];
@@ -46,7 +53,7 @@ const ArmyList: React.FC<ArmyListProps> = ({ armyName, units, onArmyUpdate }) =>
         <select
           className={styles["select-dropdown"]}
           value={selectedFaction}
-          onChange={(e) => setSelectedFaction(e.target.value)}
+          onChange={handleFactionChange}
         >
           <option value="">--Select--</option>
           {Object.keys(armyOptions).map((fKey) => (
