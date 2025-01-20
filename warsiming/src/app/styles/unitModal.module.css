@@ -1,0 +1,43 @@
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background: #2b2b2b;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    color: #e0e0e0;
+  }
+  
+  .models-list {
+    margin: 15px 0;
+  }
+  
+  .model-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .health-input {
+    width: 60px;
+    padding: 5px;
+    margin-right: 10px;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }

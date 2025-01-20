@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import ArmyList from "./ArmyList";
-import BattleArea from "./BattleArea";
+import BattleArea from "./battleArea/BattleArea";
 import { Unit } from "../shared"; // Adjust to your file location
 
 const ParentComponent: React.FC = () => {

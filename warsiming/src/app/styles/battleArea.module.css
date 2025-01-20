@@ -892,3 +892,199 @@
   color: #ccc;
   margin: 2px 0;
 }
+
+.battle-area {
+  padding: 20px;
+  background-color: #1e1e1e;
+  border: 2px solid #444;
+  border-radius: 8px;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.battle-header {
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #ffcc00;
+}
+
+.unit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 2px solid #333;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.unit-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  background: #292929;
+  border: 1px solid #444;
+  border-radius: 8px;
+}
+
+.unit-card {
+  padding: 8px;
+  font-size: 1rem;
+  text-align: center;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #333;
+  color: #e0e0e0;
+}
+
+.unit-card:hover {
+  border: 1px solid #ffcc00;
+  background: #444;
+}
+
+.unit-card.selected {
+  border: 2px solid #ff6600;
+  background: #4a4a4a;
+}
+
+.model-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #bbb;
+}
+
+.model-entry {
+  padding: 5px;
+  background: #444;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.attack-options {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.attack-button {
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+}
+
+.attack-button:hover {
+  background: #444;
+  border-color: #ffcc00;
+}
+
+.attack-button.selected {
+  background: #ffcc00;
+  color: #000;
+  border-color: #ff6600;
+}
+
+.attack-button.disabled {
+  background: #666;
+  color: #999;
+  border-color: #444;
+  cursor: not-allowed;
+}
+
+.attack-log {
+  margin-top: 15px;
+  padding: 10px;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 5px;
+  color: #e0e0e0;
+  white-space: pre-wrap;
+}
+
+.attack-log h4 {
+  margin-bottom: 10px;
+  color: #ffcc00;
+}
+
+.diceResultsSection {
+  margin-top: 15px;
+  padding: 10px;
+  background: #292929;
+  border: 1px solid #444;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.diceRow {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.diceRow strong {
+  margin-right: 5px;
+}
+
+.dice {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.dice.autoFail {
+  background: #660000;
+  color: #fff;
+}
+
+.dice.autoSuccess {
+  background: #006600;
+  color: #fff;
+}
+
+.roll-attack-button {
+  padding: 12px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  color: #000;
+  background: #ffcc00;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.roll-attack-button:hover {
+  background: #ffdd33;
+}
+
+.roll-attack-button.disabled {
+  background: #444;
+  color: #aaa;
+  cursor: not-allowed;
+}

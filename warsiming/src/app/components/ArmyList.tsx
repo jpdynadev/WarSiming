@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import styles from "../styles/armyList.module.css";
 import { Unit, instantiateUnit } from "../shared";
 import { armyOptions } from "../armyOptions";
+import UnitModal from "./UnitModal";
 
 type ArmyListProps = {
   armyName: string;
@@ -13,8 +14,8 @@ type ArmyListProps = {
 
 const ArmyList: React.FC<ArmyListProps> = ({ armyName, units, onArmyUpdate }) => {
   const [selectedFaction, setSelectedFaction] = useState("");
+  const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
 
-  // Called when user clicks "Add [unitName]" button
   const handleAddUnit = (templateName: string) => {
     if (!selectedFaction) return;
     const templates = armyOptions[selectedFaction];
@@ -23,11 +24,16 @@ const ArmyList: React.FC<ArmyListProps> = ({ armyName, units, onArmyUpdate }) =>
     const template = templates.find((t) => t.name === templateName);
     if (!template) return;
 
-    // Create a new unit from the template
     const newUnit = instantiateUnit(template);
-
-    // Append to our local array
     onArmyUpdate([...units, newUnit]);
+  };
+
+  const handleUpdateUnit = (updatedUnit: Unit) => {
+    const updatedUnits = units.map((u) =>
+      u.unitId === updatedUnit.unitId ? updatedUnit : u
+    );
+    onArmyUpdate(updatedUnits);
+    setSelectedUnit(null); // Close the modal
   };
 
   return (
@@ -71,19 +77,46 @@ const ArmyList: React.FC<ArmyListProps> = ({ armyName, units, onArmyUpdate }) =>
         <h3>Current {armyName} Units:</h3>
         {units.length === 0 && <p>No units yet.</p>}
 
-        {units.map((u) => (
-          <div key={u.unitId} className={styles["unit-row"]}>
-            <div className={styles["unit-row-title"]}>
-              {u.name} (Models: {u.models.length})
-            </div>
-            {u.models.map((m) => (
-              <div key={m.id}>
-                - {m.name || m.id.slice(0,5)}: {m.health} HP
+        <div className={styles["unit-grid"]}>
+          {units.map((u) => (
+            <div
+              key={u.unitId}
+              className={styles["unit-card"]}
+              onClick={() => setSelectedUnit(u)}
+            >
+              <div className={styles["unit-header"]}>
+                {u.name} <span>({u.models.length} Models)</span>
               </div>
-            ))}
-          </div>
-        ))}
+              <div className={styles["model-health"]}>
+                {u.models.slice(0, 10).map((m) => (
+                  <span
+                    key={m.id}
+                    className={
+                      m.health > 2
+                        ? styles["health-full"]
+                        : m.health > 0
+                        ? styles["health-low"]
+                        : styles["health-empty"]
+                    }
+                  >
+                    ●
+                  </span>
+                ))}
+                {u.models.length > 10 && <span>+{u.models.length - 10}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Unit Modal */}
+      {selectedUnit && (
+        <UnitModal
+          unit={selectedUnit}
+          onClose={() => setSelectedUnit(null)}
+          onSave={handleUpdateUnit}
+        />
+      )}
     </div>
   );
 };
