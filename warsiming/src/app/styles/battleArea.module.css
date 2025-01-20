@@ -1088,3 +1088,191 @@
   color: #aaa;
   cursor: not-allowed;
 }
+.battle-area {
+  position: relative;
+  min-height: 400px;
+}
+
+.armies-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Dice animation display style */
+.dice-display {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: #ffe600;
+  text-shadow: 1px 1px 2px #000;
+  pointer-events: none;
+}
+
+/* Roll attack button */
+.roll-attack-button {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+}
+
+.roll-attack-button.enabled {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.roll-attack-button.disabled {
+  background-color: #555;
+  color: #ccc;
+  border: none;
+  cursor: not-allowed;
+}
+
+.battle-area {
+  position: relative;
+  min-height: 500px;
+}
+
+.battle-header {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+  text-shadow: 2px 2px 4px #000;
+}
+
+/* Dice animation container positioned below header */
+.dice-animation {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  width: 100%;
+}
+
+/* Example styling for the animated dice image */
+.dice-animation img {
+  width: 100px;
+  height: auto;
+  animation: shake 1s infinite;
+}
+
+/* Keyframes for a shaking dice animation */
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.armies-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.roll-attack-button {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: background-color 0.3s;
+}
+
+.roll-attack-button.enabled {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.roll-attack-button.disabled {
+  background-color: #555;
+  color: #ccc;
+  border: none;
+  cursor: not-allowed;
+}
+.battle-area {
+  position: relative;
+  min-height: 500px;
+}
+
+.battle-header {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+  text-shadow: 2px 2px 4px #000;
+}
+
+/* Dice animation container */
+.dice-animation {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Dice icon styling with CSS animation */
+.dice-icon {
+  font-size: 3rem;
+  animation: diceRoll 1.5s infinite;
+}
+
+@keyframes diceRoll {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.armies-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.roll-attack-button {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: background-color 0.3s;
+}
+
+.roll-attack-button.enabled {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.roll-attack-button.disabled {
+  background-color: #555;
+  color: #ccc;
+  border: none;
+  cursor: not-allowed;
+}

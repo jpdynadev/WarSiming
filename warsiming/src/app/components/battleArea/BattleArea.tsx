@@ -24,11 +24,14 @@ const BattleArea: React.FC<BattleAreaProps> = ({
   const [selectedAttack, setSelectedAttack] = useState<Attack | null>(null);
   const [selectedDefender, setSelectedDefender] = useState<Unit | null>(null);
   const [attackLog, setAttackLog] = useState<string>("");
+  const [showDiceAnimation, setShowDiceAnimation] = useState(false);
+  const [isAttacking, setIsAttacking] = useState(false);
 
   /**
-   * When a user clicks on a unit in either ArmySection, figure out whether
-   * to assign it as the Attacker or the Defender. We also allow re‐selecting
-   * Attacker if we pick another unit on the same side.
+   * Unit selection logic:
+   * - When no attacker is selected, the clicked unit becomes the attacker.
+   * - If the clicked unit is on the same side as the attacker, we change the attacker.
+   * - If the clicked unit is on the opposite side, it is selected as the defender.
    */
   const handleSelectUnit = (unit: Unit) => {
     const isUnitOnLeft = leftSideUnits.some((u) => u.unitId === unit.unitId);
@@ -36,7 +39,6 @@ const BattleArea: React.FC<BattleAreaProps> = ({
       ? leftSideUnits.some((u) => u.unitId === selectedAttacker.unitId)
       : false;
 
-    // 1. If no Attacker yet, set this unit as Attacker.
     if (!selectedAttacker) {
       setSelectedAttacker(unit);
       setSelectedAttack(null);
@@ -44,9 +46,6 @@ const BattleArea: React.FC<BattleAreaProps> = ({
       return;
     }
 
-    // 2. If there IS an Attacker already...
-    //    a) If the new unit is on the same side as current Attacker,
-    //       switch Attacker to this new unit (and clear old Defender/Attack).
     if (isAttackerOnLeft === isUnitOnLeft) {
       setSelectedAttacker(unit);
       setSelectedAttack(null);
@@ -54,88 +53,138 @@ const BattleArea: React.FC<BattleAreaProps> = ({
       return;
     }
 
-    //    b) Otherwise, the new unit is on the opposite side. Assign as Defender.
-    //       We allow re-picking the Defender if one is already set.
     setSelectedDefender(unit);
   };
 
   /**
-   * Roll the dice for the chosen Attack, apply damage, and then show results in the Attack Log.
+   * Applies damage to the chosen defender after a delay for visual effect.
+   */
+  const applyDamage = (
+    units: Unit[],
+    defenderId: string,
+    attack: Attack
+  ): Unit[] => {
+    const updatedUnits = [...units];
+    const defender = updatedUnits.find((u) => u.unitId === defenderId);
+
+    if (!defender) return units;
+
+    let remainingDamage = attack.damage;
+
+    // Apply damage sequentially through the models
+    defender.models.forEach((model) => {
+      if (remainingDamage > 0) {
+        const newHealth = model.health - remainingDamage;
+        remainingDamage = newHealth < 0 ? Math.abs(newHealth) : 0;
+        model.health = Math.max(newHealth, 0);
+      }
+    });
+
+    // Remove any dead models
+    defender.models = defender.models.filter((m) => m.health > 0);
+
+    // Remove entire units if no models remain.
+    return updatedUnits.filter((u) => u.models.length > 0);
+  };
+
+  /**
+   * Executes the attack:
+   * 1. Shows the dice animation.
+   * 2. After the animation delay, resolves the attack and updates the Attack Log.
+   * 3. Then, after a further slight delay, applies the damage.
    */
   const handleAttack = () => {
     if (!selectedAttacker || !selectedDefender || !selectedAttack) return;
 
-    const isMelee = selectedAttack.type === "melee";
-    const result = resolveAttack(selectedAttacker, selectedDefender, selectedAttack, isMelee);
-    setAttackLog(result);
+    setIsAttacking(true);
+    setShowDiceAnimation(true);
+    setAttackLog(""); // Clear previous log
 
-    // Example "applyDamage" logic (simple, picks first model, etc.). 
-    // You may want more sophisticated damage distribution in the future.
-    const applyDamage = (
-      units: Unit[],
-      defenderId: string,
-      attack: Attack
-    ): Unit[] => {
-      const updatedUnits = [...units];
-      const defender = updatedUnits.find((u) => u.unitId === defenderId);
+    // Delay to simulate dice rolling before calculating the attack result.
+    setTimeout(() => {
+      const isMelee = selectedAttack.type === "melee";
+      const result = resolveAttack(
+        selectedAttacker,
+        selectedDefender,
+        selectedAttack,
+        isMelee
+      );
+      setAttackLog(result);
+      // Hide dice animation once the roll is finished.
+      setShowDiceAnimation(false);
 
-      if (!defender) return units;
+      // Delay damage application slightly after dice animation to heighten the impact.
+      setTimeout(() => {
+        const defenderOnLeft = leftSideUnits.some(
+          (u) => u.unitId === selectedDefender.unitId
+        );
 
-      let remainingDamage = attack.damage;
-
-      // For demo, we just subtract from each model in order until no damage left
-      defender.models.forEach((model) => {
-        if (remainingDamage > 0) {
-          const newHealth = model.health - remainingDamage;
-          remainingDamage = newHealth < 0 ? Math.abs(newHealth) : 0;
-          model.health = Math.max(newHealth, 0);
+        if (defenderOnLeft && onLeftSideUpdate) {
+          const updatedLeft = applyDamage(
+            leftSideUnits,
+            selectedDefender.unitId,
+            selectedAttack
+          );
+          onLeftSideUpdate(updatedLeft);
+        } else if (!defenderOnLeft && onRightSideUpdate) {
+          const updatedRight = applyDamage(
+            rightSideUnits,
+            selectedDefender.unitId,
+            selectedAttack
+          );
+          onRightSideUpdate(updatedRight);
         }
-      });
 
-      // Remove dead models
-      defender.models = defender.models.filter((m) => m.health > 0);
-
-      // Filter out entire squads that have no models left
-      return updatedUnits.filter((u) => u.models.length > 0);
-    };
-
-    // Check which side the Defender was on, apply damage to that side
-    const defenderOnLeft = leftSideUnits.some((u) => u.unitId === selectedDefender.unitId);
-
-    if (defenderOnLeft && onLeftSideUpdate) {
-      const updatedLeft = applyDamage(leftSideUnits, selectedDefender.unitId, selectedAttack);
-      onLeftSideUpdate(updatedLeft);
-    } else if (!defenderOnLeft && onRightSideUpdate) {
-      const updatedRight = applyDamage(rightSideUnits, selectedDefender.unitId, selectedAttack);
-      onRightSideUpdate(updatedRight);
-    }
-
-    setSelectedAttacker(null);
-    setSelectedDefender(null);
-    setSelectedAttack(null);
+        // Reset selections and attacking state after damage is applied.
+        setSelectedAttacker(null);
+        setSelectedDefender(null);
+        setSelectedAttack(null);
+        setIsAttacking(false);
+      }, 500);
+    }, 1500);
   };
 
   return (
-    <div className={styles["battle-area"]}>
-      <h2 className={styles["battle-header"]}>Battle Area</h2>
+    <div
+      className={styles["battle-area"]}
+      style={{
+        background: "url('/battlefield.jpg') no-repeat center center",
+        backgroundSize: "cover",
+        padding: "20px",
+        border: "3px solid #333",
+        borderRadius: "10px",
+        position: "relative",
+      }}
+    >
+      {/* Battle Area Header */}
+      <h2 className={styles["battle-header"]}>BATTLE AREA</h2>
 
-      {/* Left Side Army */}
-      <ArmySection
-        title="Left-Side Army"
-        units={leftSideUnits}
-        onSelectUnit={handleSelectUnit}
-        attackerId={selectedAttacker?.unitId}
-        defenderId={selectedDefender?.unitId}
-      />
+      {/* Dice Animation Container (uses a dice emoji with CSS animation) */}
+      {showDiceAnimation && (
+        <div className={styles["dice-animation"]}>
+          <span className={styles["dice-icon"]}>🎲</span>
+        </div>
+      )}
 
-      {/* Right Side Army */}
-      <ArmySection
-        title="Right-Side Army"
-        units={rightSideUnits}
-        onSelectUnit={handleSelectUnit}
-        attackerId={selectedAttacker?.unitId}
-        defenderId={selectedDefender?.unitId}
-      />
+      <div className={styles["armies-container"]}>
+        {/* Left Side Army */}
+        <ArmySection
+          title="Left-Side Army"
+          units={leftSideUnits}
+          onSelectUnit={handleSelectUnit}
+          attackerId={selectedAttacker?.unitId}
+          defenderId={selectedDefender?.unitId}
+        />
+
+        {/* Right Side Army */}
+        <ArmySection
+          title="Right-Side Army"
+          units={rightSideUnits}
+          onSelectUnit={handleSelectUnit}
+          attackerId={selectedAttacker?.unitId}
+          defenderId={selectedDefender?.unitId}
+        />
+      </div>
 
       {/* Attack Options for the selected Attacker */}
       {selectedAttacker && (
@@ -149,14 +198,22 @@ const BattleArea: React.FC<BattleAreaProps> = ({
       {/* Roll Attack Button */}
       <button
         onClick={handleAttack}
-        disabled={!selectedAttacker || !selectedDefender || !selectedAttack}
+        disabled={
+          !selectedAttacker ||
+          !selectedDefender ||
+          !selectedAttack ||
+          isAttacking
+        }
         className={`${styles["roll-attack-button"]} ${
-          selectedAttacker && selectedDefender && selectedAttack
+          selectedAttacker &&
+          selectedDefender &&
+          selectedAttack &&
+          !isAttacking
             ? styles["enabled"]
             : styles["disabled"]
         }`}
       >
-        Roll Attack
+        {isAttacking ? "Attacking..." : "Roll Attack"}
       </button>
 
       {/* Attack Log */}
