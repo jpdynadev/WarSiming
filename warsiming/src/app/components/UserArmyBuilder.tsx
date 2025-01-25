@@ -10,13 +10,14 @@ import FactionUnitList from "./factions/FactionUnitList";
 import SelectedUnits from "./factions/SelectedUnits";
 import CustomArmyForm from "./factions/CustomArmyForm";
 import ArmyListDisplay from "./armyComponents/ArmyListDisplay";
+import ArmyModal from "./armyComponents/ArmyModal";
 
 interface CustomArmy {
   id: string;
   userEmail: string;
   name: string;
   notes?: string;
-  faction: string;             // store which faction
+  faction: string;
   chosenUnits: ChosenUnit[];
 }
 
@@ -33,9 +34,10 @@ const UserArmyBuilder: React.FC = () => {
   const [chosenUnits, setChosenUnits] = useState<ChosenUnit[]>([]);
   const [userArmies, setUserArmies] = useState<CustomArmy[]>([]);
 
-  // ---------------------------------------------------------------------------
-  // 1) Load user's armies from localStorage on mount
-  // ---------------------------------------------------------------------------
+  // NEW: track which army is open in the modal
+  const [selectedArmyForModal, setSelectedArmyForModal] = useState<CustomArmy | null>(null);
+
+  // Load from localStorage
   useEffect(() => {
     if (isLoggedIn && user?.email) {
       const stored = localStorage.getItem("customArmies");
@@ -47,32 +49,23 @@ const UserArmyBuilder: React.FC = () => {
     }
   }, [isLoggedIn, user?.email]);
 
-  // ---------------------------------------------------------------------------
-  // 2) Helper: persist armies to localStorage
-  // ---------------------------------------------------------------------------
+  // Save to localStorage
   const saveUserArmies = (updated: CustomArmy[]) => {
     if (!user?.email) return;
     const stored = localStorage.getItem("customArmies");
     let allArmies: CustomArmy[] = stored ? JSON.parse(stored) : [];
-
-    // remove old armies for this user
     allArmies = allArmies.filter((a) => a.userEmail !== user.email);
-    // add updated
     allArmies = [...allArmies, ...updated];
     localStorage.setItem("customArmies", JSON.stringify(allArmies));
   };
 
-  // ---------------------------------------------------------------------------
-  // 3) Switching factions => clear chosenUnits
-  // ---------------------------------------------------------------------------
+  // Switch faction => clear chosenUnits
   const handleFactionChange = (faction: string) => {
     setSelectedFaction(faction);
     setChosenUnits([]);
   };
 
-  // ---------------------------------------------------------------------------
-  // 4) Add a unit from the selected faction
-  // ---------------------------------------------------------------------------
+  // Add a unit from the selected faction
   const handleAddUnit = (templateName: string) => {
     if (!selectedFaction) return;
     const templates = armyOptions[selectedFaction];
@@ -87,53 +80,62 @@ const UserArmyBuilder: React.FC = () => {
       templateName,
       points: cost,
     };
-
     setChosenUnits((prev) => [...prev, newUnit]);
   };
 
-  // ---------------------------------------------------------------------------
-  // 5) Remove a chosen unit
-  // ---------------------------------------------------------------------------
+  // Remove a chosen unit
   const handleRemoveChosenUnit = (id: string) => {
     setChosenUnits((prev) => prev.filter((u) => u.id !== id));
   };
 
-  // ---------------------------------------------------------------------------
-  // 6) Save a new custom army
-  // ---------------------------------------------------------------------------
+  // Save new custom army
   const handleSaveArmy = (armyName: string, notes: string) => {
     if (!user?.email) return;
-
     const newArmy: CustomArmy = {
       id: uuidv4(),
       userEmail: user.email,
       name: armyName.trim() || "Untitled Army",
       notes: notes.trim(),
-      faction: selectedFaction,  // store current faction
+      faction: selectedFaction,
       chosenUnits,
     };
-
     const updated = [...userArmies, newArmy];
     setUserArmies(updated);
     saveUserArmies(updated);
 
-    // clear form
+    // clear
     setChosenUnits([]);
     setSelectedFaction("");
   };
 
-  // ---------------------------------------------------------------------------
-  // 7) Delete a saved army
-  // ---------------------------------------------------------------------------
+  // Delete a saved army
   const handleDeleteArmy = (armyId: string) => {
     const updated = userArmies.filter((a) => a.id !== armyId);
     setUserArmies(updated);
     saveUserArmies(updated);
   };
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
+  // When user clicks an army, open the modal
+  const handleSelectArmy = (army: CustomArmy) => {
+    setSelectedArmyForModal(army);
+  };
+
+  // Called from the modal when user saves changes
+  const handleModalSave = (updatedArmy: CustomArmy) => {
+    // 1) Update in state
+    const updatedList = userArmies.map((a) => (a.id === updatedArmy.id ? updatedArmy : a));
+    setUserArmies(updatedList);
+    // 2) Save to localStorage
+    saveUserArmies(updatedList);
+    // 3) Close modal
+    setSelectedArmyForModal(null);
+  };
+
+  // Called from the modal if user cancels
+  const handleModalClose = () => {
+    setSelectedArmyForModal(null);
+  };
+
   if (!isLoggedIn) {
     return (
       <div style={{ padding: "16px", color: "#ccc" }}>
@@ -147,22 +149,32 @@ const UserArmyBuilder: React.FC = () => {
     <div style={{ padding: "16px", color: "#ccc" }}>
       <h2>Custom Army Builder</h2>
 
-      {/* 1) Faction + adding units */}
+      {/* Step 1: Build new Army */}
       <FactionSelector
         selectedFaction={selectedFaction}
         onFactionChange={handleFactionChange}
       />
-
       <FactionUnitList faction={selectedFaction} onAddUnit={handleAddUnit} />
-
       <SelectedUnits units={chosenUnits} onRemove={handleRemoveChosenUnit} />
-
       <CustomArmyForm onSave={handleSaveArmy} />
 
       <hr style={{ margin: "20px 0", border: "1px solid #444" }} />
 
-      {/* 2) Display saved armies */}
-      <ArmyListDisplay armies={userArmies} onDeleteArmy={handleDeleteArmy} />
+      {/* Step 2: Display saved armies, handle click => open modal */}
+      <ArmyListDisplay
+        armies={userArmies}
+        onDeleteArmy={handleDeleteArmy}
+        onSelectArmy={handleSelectArmy}
+      />
+
+      {/* The Army Modal, appears if an army was selected */}
+      {selectedArmyForModal && (
+        <ArmyModal
+          army={selectedArmyForModal}
+          onClose={handleModalClose}
+          onSave={handleModalSave}
+        />
+      )}
     </div>
   );
 };

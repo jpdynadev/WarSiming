@@ -7,6 +7,7 @@ import ArmyCard from "./ArmyCard";
 interface ArmyListDisplayProps {
   armies: CustomArmy[];
   onDeleteArmy: (armyId: string) => void;
+  onSelectArmy: (army: CustomArmy) => void;  // <--
 }
 
 interface CustomArmy {
@@ -27,6 +28,7 @@ interface ChosenUnit {
 const ArmyListDisplay: React.FC<ArmyListDisplayProps> = ({
   armies,
   onDeleteArmy,
+  onSelectArmy,
 }) => {
   if (armies.length === 0) {
     return <p>No saved armies yet.</p>;
@@ -35,7 +37,12 @@ const ArmyListDisplay: React.FC<ArmyListDisplayProps> = ({
   return (
     <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
       {armies.map((army) => (
-        <li key={army.id} style={{ marginBottom: "12px" }}>
+        <li
+          key={army.id}
+          style={{ marginBottom: "12px" }}
+          // Click => open modal
+          onClick={() => onSelectArmy(army)}
+        >
           <ArmyCard army={army} onDeleteArmy={onDeleteArmy} />
         </li>
       ))}

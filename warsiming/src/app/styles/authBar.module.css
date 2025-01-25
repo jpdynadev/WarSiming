@@ -1,24 +1,79 @@
-/* File: app/styles/authBar.module.css */
-.authBar {
+/* app/components/auth/AuthBar.module.css */
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    /* The above is a sample tri-color gradient,
+       you can also do a single color or fancier scheme. */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    position: sticky; /* so it sticks to top if you want */
+    top: 0;
+    z-index: 999; /* ensure it stays above other elements */
+    color: #f0f0f0;
+  }
+  
+  /* Left side brand styling */
+  .brand {
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .brandLink {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .brandLink:hover {
+    color: #fff;
+  }
+  
+  /* Right side nav actions */
+  .navActions {
     display: flex;
     gap: 1rem;
     align-items: center;
-    justify-content: flex-end;
-    background-color: #111;
-    padding: 8px 16px;
-    border-bottom: 2px solid #444;
   }
   
+  /* Show "Welcome, user!" in a subtle highlight */
+  .welcomeText {
+    font-size: 0.95rem;
+    font-style: italic;
+    margin-right: 1rem;
+    color: #ddd;
+  }
+  
+  /* Reusable link styling */
+  .navLink {
+    color: #f0f0f0;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom 0.2s;
+  }
+  
+  .navLink:hover {
+    border-bottom: 1px solid #fff;
+  }
+  
+  /* Auth Buttons */
   .authButton {
-    background-color: #333;
-    border: 1px solid #555;
-    color: #fff;
-    padding: 6px 12px;
+    background-color: transparent;
+    color: #f0f0f0;
+    border: 1px solid #ddd;
     border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
     cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
   }
   
   .authButton:hover {
-    background-color: #555;
+    background-color: #f0f0f0;
+    color: #333;
   }
   

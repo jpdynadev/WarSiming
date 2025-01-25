@@ -1,0 +1,102 @@
+/* app/components/userArmy/ModalUnitCard.module.css */
+
+.card {
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    margin-bottom: 12px;
+    padding: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+  }
+  
+  .topRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .unitName {
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  
+  .removeBtn {
+    background-color: transparent;
+    border: 1px solid #f55;
+    color: #f55;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .removeBtn:hover {
+    background-color: #f55;
+    color: #fff;
+  }
+  
+  .attacksContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .noAttacks {
+    font-style: italic;
+    color: #bbb;
+    margin-left: 4px;
+  }
+  
+  .attackRow {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+  
+  .attackRow:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  }
+  
+  .attackName {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .attackStats {
+    display: flex;
+    gap: 10px;
+    font-size: 0.85rem;
+  }
+  
+  /* 
+     Gradient classes - we combine them:
+     e.g. "attackRow melee deadly" 
+  */
+  
+  /* Melee = a fiery orange-red gradient */
+  .melee {
+    background: linear-gradient(45deg, #b82e2e, #f75f1c);
+  }
+  
+  /* Ranged = a cooler blue-green gradient */
+  .ranged {
+    background: linear-gradient(45deg, #1b4f87, #29a0b1);
+  }
+  
+  /* Deadly = a deeper, more intense effect layered on top */
+  .deadly {
+    border: 2px solid #ffef00;
+    box-shadow: inset 0 0 10px rgba(255, 239, 0, 0.5);
+  }
+  
+  /* Weak = an overlay or border that indicates less threat */
+  .weak {
+    border: 2px dashed #999;
+  }
+  
