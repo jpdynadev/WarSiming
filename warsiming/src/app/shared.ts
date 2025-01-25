@@ -18,9 +18,10 @@ export interface UnitTemplate {
   toughness: number;
   save: number;
   invulnerableSave?: number;
-  leadership: number; // Leadership characteristic
-  oc: number; // Objective Control characteristic
-  attacks: Attack[]; // Array of available attacks for this unit
+  leadership: number;
+  oc: number;
+  attacks: Attack[];
+  points?: number; // <--- new field for cost
 }
 
 
