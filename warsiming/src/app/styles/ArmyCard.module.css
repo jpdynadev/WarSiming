@@ -1,0 +1,59 @@
+/* app/components/userArmy/ArmyCard.module.css */
+
+.card {
+    background-color: #2a2a2a;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    transition: box-shadow 0.3s;
+    position: relative;
+  }
+  
+  .card:hover {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+  }
+  
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .armyName {
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  
+  .points {
+    margin-left: auto;
+    font-weight: bold;
+  }
+  
+  .notes {
+    margin-left: 10px;
+    font-style: italic;
+  }
+  
+  .deleteButton {
+    background-color: transparent;
+    border: 1px solid #f55;
+    color: #f55;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .deleteButton:hover {
+    background-color: #f55;
+    color: #fff;
+  }
+  
+  .unitList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  

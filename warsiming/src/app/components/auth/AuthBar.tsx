@@ -19,6 +19,10 @@ const AuthBar: React.FC = () => {
             My Armies
           </Link>
 
+          <Link href="/" className={styles.authLink}>
+            Home
+          </Link>
+
           <button onClick={logout} className={styles.authButton}>
             Logout
           </button>

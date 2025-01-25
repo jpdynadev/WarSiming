@@ -1,0 +1,119 @@
+/* app/components/UserArmyBuilder.module.css */
+
+/* Container styling */
+.armyBuilderContainer {
+    padding: 20px;
+    color: #e0e0e0;
+    background-color: #1a1a1a;
+    max-width: 800px;
+    margin: 0 auto; /* center horizontally */
+    border: 1px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+  }
+  
+  /* Section headings */
+  .mainTitle {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  
+  .savedTitle {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #444;
+    display: inline-block;
+    padding-bottom: 4px;
+  }
+  
+  /* Horizontal divider styling */
+  .divider {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 20px 0;
+  }
+  
+  /* The list of armies */
+  .armiesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Each army card container */
+  .armyCard {
+    background-color: #2a2a2a;
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    transition: box-shadow 0.3s ease;
+    position: relative; /* for any future positioning needs */
+    overflow: hidden;
+    
+    /* We’ll control the max-height for the hover effect. 
+       If you have many units, you might do a bigger default. */
+    max-height: 85px;
+  }
+  
+  .armyCard:hover {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    max-height: 300px; /* Enough to show all units. Adjust as needed. */
+    transition: max-height 0.4s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Army header row */
+  .armyCardHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  
+  /* Points and notes styling */
+  .points {
+    font-weight: bold;
+    margin-left: auto; /* push it to the right end if you want */
+  }
+  
+  .notes {
+    margin-left: 6px;
+    font-style: italic;
+  }
+  
+  /* Delete button styling */
+  .deleteButton {
+    margin-left: 10px;
+    background-color: transparent;
+    border: 1px solid #f00;
+    color: #f00;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .deleteButton:hover {
+    background-color: #f00;
+    color: #fff;
+  }
+  
+  /* The units list inside each army card */
+  .unitsList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transition: all 0.4s ease; /* for smooth expand/collapse */
+  }
+  
+  /* Each unit line */
+  .unitItem {
+    margin-left: 6px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+  }
+  

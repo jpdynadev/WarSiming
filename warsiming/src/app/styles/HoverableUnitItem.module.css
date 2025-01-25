@@ -1,0 +1,39 @@
+/* app/components/userArmy/HoverableUnitItem.module.css */
+
+.itemContainer {
+    position: relative;
+    display: inline-block;
+    cursor: help; /* indicates there's extra info on hover */
+  }
+  
+  .unitLine {
+    color: #ccc;
+  }
+  
+  /* The tooltip container */
+  .tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    transform: translateY(-8px);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #f0f0f0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    width: max-content;
+    max-width: 300px;
+    z-index: 999;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  
+    /* subtle fade in */
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  .tooltipText {
+    font-size: 0.85rem;
+    line-height: 1.2rem;
+    white-space: pre-wrap; 
+  }
+  
