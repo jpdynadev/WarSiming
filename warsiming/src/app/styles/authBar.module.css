@@ -1,0 +1,24 @@
+/* File: app/styles/authBar.module.css */
+.authBar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-end;
+    background-color: #111;
+    padding: 8px 16px;
+    border-bottom: 2px solid #444;
+  }
+  
+  .authButton {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .authButton:hover {
+    background-color: #555;
+  }
+  
