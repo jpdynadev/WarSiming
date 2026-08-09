@@ -1,0 +1,15 @@
+name: Kinnan runner smoke
+on:
+  push:
+    branches: [agent/kinnan-forge-engine]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "Kinnan remote runner is alive"
+          java -version
+          curl -I -L --max-time 20 https://github.com/Card-Forge/forge/releases/tag/daily-snapshots
